@@ -113,7 +113,7 @@ BACKEND_PORT=4000
 # Frontend Next.js
 # -------------------------
 # A URL da API exposta para o frontend (acesso via serviço Docker "app")
-NEXT_PUBLIC_BACKEND_API_URL=http://app:4000
+NEXT_PUBLIC_BACKEND_API_URL=http://localhost:4000
 ```
 
 3. Suba os containers com Docker Compose:
