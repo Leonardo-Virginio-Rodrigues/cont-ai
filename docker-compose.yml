@@ -17,32 +17,32 @@ services:
       context: ./backend
     container_name: nest_app
     restart: unless-stopped
-    ports:
-      - "4000:4000"
-    depends_on:
-      - db
     env_file:
       - .env
     command: npm run start:dev
+    ports:
+      - "4000:4000"
     volumes:
       - ./backend:/app
       - /app/node_modules
+    depends_on:
+      - db
 
   frontend:
     build:
       context: ./frontend
     container_name: next_frontend
     restart: unless-stopped
-    ports:
-      - "3000:3000"
-    depends_on:
-      - app
     env_file:
       - .env
+    command: npm run dev
+    ports:
+      - "3000:3000"
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    command: npm start
+    depends_on:
+      - app
 
 volumes:
   pgdata:
