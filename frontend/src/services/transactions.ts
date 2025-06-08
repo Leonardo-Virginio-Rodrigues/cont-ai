@@ -1,4 +1,4 @@
-import { TransactionData } from "@/types/transaction";
+import { TransactionData, TransactionResponse } from "@/types/transaction";
 import { ApiValidationError } from "@/types/api";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -13,10 +13,16 @@ export async function createTransaction(data: TransactionData) {
     };
     const response = await axios.post(API_URL, formattedData);
     return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw error.response.data as ApiValidationError;
     }
     throw error;
   }
+}
+
+export async function getTransactions(): Promise<TransactionResponse[]> {
+  const response = await axios.get(API_URL);
+  return response.data as TransactionResponse[];
 }

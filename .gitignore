@@ -1,20 +1,25 @@
+# Ignore o .env com dados sensíveis
 .env
+
+# Node modules (geralmente já ignorado, mas importante garantir)
+**/node_modules/
+
+# Logs
 *.log
-node_modules/
-dist/
-build/
 
-pgdata/
-*.pid
-*.sock
-
-frontend/node_modules/
-frontend/dist/
-
-backend/node_modules/
+# Diretórios de build do Next.js e NestJS
+frontend/.next/
 backend/dist/
 
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
+# Cache
+**/.turbo/
+**/.cache/
+**/.DS_Store
+
+# Docker volumes (caso gere algum temporário)
+volumes/
+
+# Outros
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

@@ -3,17 +3,16 @@ import Header from "@/components/Header";
 import styles from "@/styles/Form.module.css";
 import { createTransaction } from "@/services/transactions";
 import { ApiValidationError } from "@/types/api";
-import { TransactionData } from "@/types/transaction";
+import { TransactionData, TransactionFormData } from "@/types/transaction";
 
 export default function CreateTransaction() {
-  const [formData, setFormData] = useState<TransactionData>({
+  const [formData, setFormData] = useState<TransactionFormData>({
     description: "",
-    amount: 0,
+    amount: "",
     type: "credit",
     createdAt: "",
   });
 
-  // Estado para erros por campo
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleChange = (
@@ -22,7 +21,7 @@ export default function CreateTransaction() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "amount" ? Number(value) : value,
+      [name]: value,
     }));
   };
 
@@ -30,12 +29,17 @@ export default function CreateTransaction() {
     e.preventDefault();
     setErrors({});
 
+    const preparedData: TransactionData = {
+      ...formData,
+      amount: Number(formData.amount),
+    };
+
     try {
-      await createTransaction(formData);
-      alert("Transação criada com sucesso!");
+      await createTransaction(preparedData);
+      alert("Lançamento cadastrado com sucesso!");
       setFormData({
         description: "",
-        amount: 0,
+        amount: "",
         type: "credit",
         createdAt: "",
       });
@@ -52,12 +56,16 @@ export default function CreateTransaction() {
 
         apiError.message.forEach((msg) => {
           if (msg.toLowerCase().includes("description"))
-            fieldErrors.description = msg;
+            fieldErrors.description =
+              "A descrição é obrigatória e não pode ficar vazia.";
           else if (msg.toLowerCase().includes("amount"))
-            fieldErrors.amount = msg;
-          else if (msg.toLowerCase().includes("type")) fieldErrors.type = msg;
+            fieldErrors.amount =
+              "O valor deve ser um número positivo maior que zero.";
+          else if (msg.toLowerCase().includes("type"))
+            fieldErrors.type =
+              "Tipo inválido. Os tipos permitidos são: Credit ou Debit.";
           else if (msg.toLowerCase().includes("createdat"))
-            fieldErrors.createdAt = msg;
+            fieldErrors.createdAt = "Data inválida. Use o formato DD/MM/YYYY.";
         });
 
         setErrors(fieldErrors);
@@ -71,16 +79,16 @@ export default function CreateTransaction() {
     <div className={styles.page}>
       <Header />
       <main className={styles.main}>
-        <h1 className={styles.title}>Create Transaction</h1>
+        <h1 className={styles.title}>Cadastrar Lançamento</h1>
         <form onSubmit={handleSubmit} className={styles.form}>
           <label>
-            Description:
+            Descrição:
             <input
               type="text"
               name="description"
+              placeholder="Ex: Pagamento do salário!"
               value={formData.description}
               onChange={handleChange}
-              required
             />
             {errors.description && (
               <p style={{ color: "red" }}>{errors.description}</p>
@@ -88,34 +96,33 @@ export default function CreateTransaction() {
           </label>
 
           <label>
-            Amount:
+            Valor:
             <input
               type="number"
               name="amount"
               value={formData.amount}
               onChange={handleChange}
-              required
+              placeholder="Ex: 100.00"
             />
             {errors.amount && <p style={{ color: "red" }}>{errors.amount}</p>}
           </label>
 
           <label>
-            Type:
+            Tipo:
             <select name="type" value={formData.type} onChange={handleChange}>
-              <option value="credit">Credit</option>
-              <option value="debit">Debit</option>
+              <option value="credit">Crédito</option>
+              <option value="debit">Débito</option>
             </select>
             {errors.type && <p style={{ color: "red" }}>{errors.type}</p>}
           </label>
 
           <label>
-            Created At:
+            Data do lançamento:
             <input
               type="date"
               name="createdAt"
               value={formData.createdAt}
               onChange={handleChange}
-              required
             />
             {errors.createdAt && (
               <p style={{ color: "red" }}>{errors.createdAt}</p>
@@ -123,7 +130,7 @@ export default function CreateTransaction() {
           </label>
 
           <button type="submit" className={styles.button}>
-            Submit
+            Criar
           </button>
         </form>
       </main>
